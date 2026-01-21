@@ -21,7 +21,6 @@ export function LandingPage() {
     setLastSubmitTime(now);
 
     if (honeypot) {
-      setStatus('success');
       return;
     }
 
@@ -34,15 +33,24 @@ export function LandingPage() {
     setErrorMessage('');
   
     try {
+      /**
+       * waitlist-key is a small deterrent against bots
+       * this landing page is meant to be simplistic and doesn't have anything
+       * very sensitive on it
+       */
       const response = await fetch(import.meta.env.VITE_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'waitlist-key': import.meta.env.VITE_HEADER
         },
-        body: JSON.stringify({ email: email })
-      });
-
-      if (response.ok) {
+        body: JSON.stringify({ 
+          email: email,
+          website: honeypot
+        })
+      });      
+      console.log(response)
+      if (response.status === 200) {
         setStatus('success');
         setEmail('');
       } else {
@@ -56,8 +64,10 @@ export function LandingPage() {
     } finally{
       setTimeout(() => {
         setErrorMessage("")
-        setStatus('idle')
-      }, 2000)
+        if(status != "success"){
+          setStatus("idle")
+        }
+      }, 6000)
     }
   };
 
@@ -80,7 +90,7 @@ export function LandingPage() {
 
           {/** Supporting headline */}
           <p className="text-xl md:text-2xl text-gray-500 font-medium max-w-lg mx-auto leading-relaxed text-center">
-            From software developers who hates mass-applying.
+            From software developers who hate mass-applying.
             LLMs can speed up job applications — but they shouldn't turn your resume into a generic template.
             We're covering that gap.
           </p>
@@ -93,7 +103,7 @@ export function LandingPage() {
                 <CheckCircle2 size={24} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900">
-                Thanks for joining our waitlist! Unsubscribe at anytime.
+                Thanks for joining our waitlist! Reply "unsubscribe" to any email you recieve from us to opt-out.
               </h3>
               <p className="text-gray-600 mt-2">
                 Keep an eye on your inbox(and the spam folder) for emails about our product. 
@@ -106,7 +116,8 @@ export function LandingPage() {
             <form onSubmit={handleSubmit} className="relative group">
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-grow">
-                  <input type="email" value={email} onChange={e => { 
+                  {/** 254 matches most email providers and standards */}
+                  <input type="email" maxLength={254} value={email} onChange={e => { 
                       setEmail(e.target.value);
                       if (status === 'error'){
                         setStatus('idle');
@@ -125,7 +136,7 @@ export function LandingPage() {
                 <button type="submit" disabled={status === 'loading'} className="px-8 py-4 bg-[#FF6B35] hover:bg-[#E85A2D] active:bg-[#D64D23] text-white text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center min-w-[160px]"> {/** holy class name o_O */}
                   {status === 'loading' ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
                     <>
-                      Join Waitlist
+                      Join the Waitlist
                       <ArrowRight size={18} className="ml-2 opacity-80" />
                     </>
                     )
