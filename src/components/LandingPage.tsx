@@ -38,7 +38,9 @@ export function LandingPage() {
        * this landing page is meant to be simplistic and doesn't have anything
        * very sensitive on it
        */
-      const response = await fetch(import.meta.env.VITE_WEBHOOK_URL, {
+      const url = import.meta.env.VITE_WEBHOOK_URL
+      console.log("URL before the fetch call", url)
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +51,7 @@ export function LandingPage() {
           website: honeypot
         })
       });      
-      console.log(response)
+      // console.log(response)
       if (response.status === 200) {
         setStatus('success');
         setEmail('');
@@ -70,7 +72,7 @@ export function LandingPage() {
       }, 6000)
     }
   };
-
+  
   // SVG Pattern for background - subtle briefcase/document icons
   const backgroundPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 7h-4V4c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v3H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2zM10 4h4v3h-4V4z' fill='%23111827' opacity='0.03'/%3E%3C/svg%3E")`;
   return <div className="min-h-screen w-full bg-white text-gray-900 font-sans selection:bg-orange-100 selection:text-orange-900" style={{
@@ -82,12 +84,11 @@ export function LandingPage() {
             <span className="flex h-2 w-2 rounded-full bg-orange-500 mr-2"></span>
             Join the Waitlist
           </div> */}
-
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 leading-[1.1]">
             Apply effectively with AI that knows when to{' '}
             <span className="text-gray-400">step back.</span>
           </h1>
-
+          
           {/** Supporting headline */}
           <p className="text-xl md:text-2xl text-gray-500 font-medium max-w-lg mx-auto leading-relaxed text-center">
             From software developers who hate mass-applying.
